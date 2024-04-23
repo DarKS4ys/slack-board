@@ -6,6 +6,8 @@ import {
 } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
+const adminEmails = process.env.ADMIN_EMAILS!;
+
 export default authMiddleware({
   debug: false,
 
@@ -23,16 +25,18 @@ export default authMiddleware({
 
       if (
         !user?.emailAddresses.some((email) =>
-          ['melihyardim1057@gmail.com', 'melihyardim@gmail.com'].includes(email.emailAddress)
-        ) && new URL(req.url).pathname !== '/not-allowed'
+          adminEmails.includes(email.emailAddress)
+        ) &&
+        new URL(req.url).pathname !== '/not-allowed'
       ) {
         const currentUrl = new URL(req.url);
         currentUrl.pathname = '/not-allowed';
         return NextResponse.redirect(currentUrl.href);
       } else if (
         user?.emailAddresses.some((email) =>
-        ['melihyardim1057@gmail.com', 'melihyardim@gmail.com'].includes(email.emailAddress)
-      ) && new URL(req.url).pathname == '/not-allowed'
+          adminEmails.includes(email.emailAddress)
+        ) &&
+        new URL(req.url).pathname == '/not-allowed'
       ) {
         const currentUrl = new URL(req.url);
         currentUrl.pathname = '/';
