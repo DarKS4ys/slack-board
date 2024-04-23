@@ -19,7 +19,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await currentUser();
+/*   const user = await currentUser();
 
   const dbUser = await fetchUserByExternalId(user?.id);
 
@@ -27,7 +27,7 @@ export default async function RootLayout({
     dbUser &&
     dbUser?.status != 'Admin' &&
     user?.emailAddresses.some((email) =>
-      ['melihyardim1057@gmail.com', 'melihyardim@gmail.com'].includes(
+      process.env.ADMIN_EMAILS!.includes(
         email.emailAddress
       )
     )
@@ -38,7 +38,8 @@ export default async function RootLayout({
         status: 'Admin',
       },
     });
-  }
+  } */
+
   return (
     <ClerkProvider>
       <html lang="en">
