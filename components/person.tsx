@@ -13,7 +13,7 @@ import { updateUserDB } from '@/actions/user';
 import { FiLoader } from 'react-icons/fi';
 import Notification from './notification';
 import { newHistoryItem } from '@/actions/history';
-import { User as UserClerk} from '@clerk/nextjs/server';
+
 export default function Person({
   users,
   person,
