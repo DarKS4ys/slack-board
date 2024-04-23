@@ -2,11 +2,10 @@
 import type { HistoryItem, User } from '@prisma/client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import DefaultPfp from '@/public/Default_pfp.svg';
+import DefaultPfp from '@/public/default_pfp.svg';
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from './ui/drawer';
 import { cn, formatDate } from '@/lib/utils';
 import { Slider } from './ui/slider';
-import { Button } from './ui/button';
 import { MinusIcon, PlusIcon } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import { updateUserDB } from '@/actions/user';
