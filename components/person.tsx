@@ -93,7 +93,7 @@ export default function Person({
     <Drawer>
       <Notification reset={resetNotify} notify={notify} />
       <DrawerTrigger asChild>
-        <button className="flex flex-col gap-y-2 hover:bg-border transition hover:shadow-[0_0px_20px_rgba(255,_255,_255,_0.15)] hover:scale-110 duration-300 rounded-lg border p-8 items-center">
+        <button className="flex flex-col gap-y-2 hover:bg-border w-60 transition hover:shadow-[0_0px_20px_rgba(255,_255,_255,_0.15)] hover:scale-110 duration-300 rounded-lg border p-8 items-center">
           <div className="w-24 h-24 rounded-full overflow-hidden relative">
             <Image
               quality={95}
@@ -102,7 +102,7 @@ export default function Person({
               alt={`${person.first_name}'s profile picture`}
             />
           </div>
-          <h1 className="text-xl font-medium">{`${person.first_name} ${person.last_name}`}</h1>
+          <h1 className="text-xl font-medium line-clamp-1">{`${person.first_name} ${person.last_name}`}</h1>
           {person.percentage ? (
             <h2
               className={cn(

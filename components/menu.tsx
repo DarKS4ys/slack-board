@@ -72,9 +72,8 @@ export default function Menu({
             </DialogContent>
           </Dialog>
           {initialized ? (
-            <SignOutButton>
+            <SignOutButton signOutCallback={() => router.push('/sign-in')}>
               <button
-                onClick={() => router.push('/sign-in')}
                 className="active:scale-90 p-1.5 rounded-lg bg-primary-foreground hover:bg-border border border-border transition"
               >
                 <BiLogOut />

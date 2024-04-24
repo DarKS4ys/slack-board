@@ -3,6 +3,7 @@ import { fetchUserByExternalId } from '@/data/user';
 import { db } from '@/lib/prisma';
 import Menu from '@/components/menu';
 import { Toaster } from '@/components/ui/toaster';
+import { updateUserMetadata } from '@/actions/user';
 
 export default async function RootLayout({
   children,
@@ -11,21 +12,14 @@ export default async function RootLayout({
 }>) {
   const user = await currentUser();
 
-  const dbUser = await fetchUserByExternalId(user?.id);
-
   if (
-    dbUser &&
-    dbUser?.status != 'Admin' &&
+    user &&
+    user?.privateMetadata.status != 'Admin' &&
     user?.emailAddresses.some((email) =>
       process.env.ADMIN_EMAILS!.includes(email.emailAddress)
     )
   ) {
-    await db.user.update({
-      where: { externalId: dbUser.externalId },
-      data: {
-        status: 'Admin',
-      },
-    });
+    await updateUserMetadata(user.id, {status: 'Admin'})
   }
 
   return (

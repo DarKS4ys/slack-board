@@ -22,9 +22,9 @@ export default async function Home() {
       <p className="text-sm font-light text-muted-foreground">for HundredLLC (lethal company)</p>
       </div>
 
-      <div className="flex space-x-2">
+      <div className="flex">
         {users.map((user, i) => (
-          <div className=" p-6 rounded-lg" key={i}>
+          <div className="py-6 px-3 rounded-lg" key={i}>
             <Person
               currUserId={currUser?.id || 'unknown'}
               users={users}

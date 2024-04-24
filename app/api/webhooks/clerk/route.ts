@@ -36,12 +36,14 @@ async function handler(request: Request) {
 /*     console.log(id);
     console.log(attributes); */
 
-    const first_name = attributes.first_name || '';
+/*     const first_name = attributes.first_name || '';
     const last_name = attributes.last_name || '';
     const username = attributes.username || undefined;
     const image_url = attributes.image_url || '';
     const email = attributes.email_addresses[0].email_address || '';
-    const status = attributes.status || ''
+    const status = attributes.private_metadata.status */
+
+    const isAdmin = process.env.ADMIN_EMAILS!.includes(email);
 
     await db.user.upsert({
       where: { externalId: id },
@@ -51,7 +53,7 @@ async function handler(request: Request) {
         first_name: first_name,
         last_name: last_name,
         image: image_url,
-        status: status
+        status: status ? status : isAdmin ? 'Admin' : 'User'
       },
       update: {
         email: email,
@@ -60,7 +62,7 @@ async function handler(request: Request) {
         last_name: last_name,
         username: username,
         image: image_url,
-        status: status
+        status: status ? status : isAdmin ? 'Admin' : 'User'
       },
     });
 
