@@ -41,7 +41,7 @@ async function handler(request: Request) {
     const username = attributes.username || undefined;
     const image_url = attributes.image_url || '';
     const email = attributes.email_addresses[0].email_address || '';
-    const status = attributes.private_metadata.status
+    const status = attributes.private_metadata.status || ''
 
     const isAdmin = process.env.ADMIN_EMAILS!.includes(email);
 
@@ -52,6 +52,7 @@ async function handler(request: Request) {
         externalId: id,
         first_name: first_name,
         last_name: last_name,
+        username: username,
         image: image_url,
         status: status ? status : isAdmin ? 'Admin' : 'User'
       },
