@@ -29,7 +29,7 @@ export default function Menu({
   const router = useRouter();
   return (
     <div className="items-center justify-center flex fixed w-full -bottom-4">
-      <p className="md:block hidden text-sm text-muted-foreground absolute bottom-10 left-10 bottom-[20svh]">
+      <p className="md:block hidden text-sm text-muted-foreground absolute bottom-10 left-10">
         Built using <span className="font-medium text-base">CSS VARIABLES</span>
       </p>
       <motion.div
