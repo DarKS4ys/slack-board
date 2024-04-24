@@ -12,11 +12,15 @@ export const formatDate = (dateString: Date) => {
   ];
 
   const date = new Date(dateString);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
   const day = date.getDate();
   const monthIndex = date.getMonth();
   const year = date.getFullYear();
 
-  const formattedDate = `${day} ${months[monthIndex]} ${year}`;
+  const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+
+  const formattedDate = `${formattedTime}, ${day} ${months[monthIndex]} ${year}`;
 
   return formattedDate;
 };

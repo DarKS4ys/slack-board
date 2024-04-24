@@ -12,17 +12,18 @@ import { updateUserDB } from '@/actions/user';
 import { FiLoader } from 'react-icons/fi';
 import Notification from './notification';
 import { newHistoryItem } from '@/actions/history';
+import {BsArrowRight} from 'react-icons/bs'
 
 export default function Person({
   users,
   person,
   historyItems,
-  currUserId
+  currUserId,
 }: {
   users: User[];
   person: User;
   historyItems: HistoryItem[];
-  currUserId: string | undefined
+  currUserId: string | undefined;
 }) {
   const { toast } = useToast();
 
@@ -31,8 +32,8 @@ export default function Person({
   const [percentage, setPercentage] = useState<number | null>(20);
 
   const resetNotify = () => {
-    setNotify(false)
-  }
+    setNotify(false);
+  };
 
   const findUserByExternalId = (externalId: string) => {
     return users.find((user) => user.externalId === externalId);
@@ -44,20 +45,38 @@ export default function Person({
 
   const handleValueCommit = async (value: number) => {
     if (!value) {
-      console.error('No value returned from slider component')
-      return
+      console.error('No value returned from slider component');
+      return;
     }
 
     try {
-      console.log(value)
       setLoading(true);
-      
-      // run these multithreadded
-      await updateUserDB(person.externalId, { percentage: value });
-      await newHistoryItem(person.id, person.percentage || 20, value, (currUserId || 'unknown') );
 
+      const adminUsers = users.filter(user => user.status === 'Admin');
+      const totalAdmins = adminUsers.length;
 
-      setNotify(true)
+      const diff = value - (person.percentage || 20);
+
+      const distribution = diff / totalAdmins;
+
+      await Promise.all([
+        updateUserDB(person.externalId, { percentage: value }),
+        newHistoryItem(
+          person.id,
+          person.percentage || 20,
+          value,
+          currUserId || 'unknown'
+        ),
+      ]);
+
+      for (const user of adminUsers) {
+        if (user.externalId !== person.externalId) {
+          const newPercentage = (user.percentage || 20) + distribution;
+          await updateUserDB(user.externalId, { percentage: newPercentage });
+        }
+      }
+
+      setNotify(true);
 
       toast({
         title: `Adjusted the percentages for ${person.first_name} ${person.last_name}`,
@@ -72,9 +91,9 @@ export default function Person({
 
   return (
     <Drawer>
-      <Notification reset={resetNotify} notify={notify}/>
+      <Notification reset={resetNotify} notify={notify} />
       <DrawerTrigger asChild>
-        <button className="flex flex-col gap-y-2 hover:bg-border transition hover:scale-110 duration-300 rounded-lg border p-8 items-center">
+        <button className="flex flex-col gap-y-2 hover:bg-border transition hover:shadow-[0_0px_20px_rgba(255,_255,_255,_0.15)] hover:scale-110 duration-300 rounded-lg border p-8 items-center">
           <div className="w-24 h-24 rounded-full overflow-hidden relative">
             <Image
               quality={95}
@@ -120,7 +139,10 @@ export default function Person({
           <div className="w-full max-w-2xl mx-auto gap-y-4 flex flex-col">
             <h1 className="text-5xl font-semibold">{percentage}%</h1>
             <div className="flex gap-x-2">
-              <button disabled={loading} className="disabled:opacity-50 active:scale-90 transition hover:scale-110 hover:opacity-90">
+              <button
+                disabled={loading}
+                className="disabled:opacity-50 active:scale-90 transition hover:scale-110 hover:opacity-90"
+              >
                 <PlusIcon />
               </button>
               <Slider
@@ -130,28 +152,50 @@ export default function Person({
                 defaultValue={[percentage || 20]}
                 max={100}
                 step={1}
-                className='disabled:opacity-50 disabled:cursor-not-allowed'
+                className="disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <button disabled={loading} className="disabled:opacity-50 active:scale-90 transition hover:scale-110 hover:opacity-90">
+              <button
+                disabled={loading}
+                className="disabled:opacity-50 active:scale-90 transition hover:scale-110 hover:opacity-90"
+              >
                 <MinusIcon />
               </button>
             </div>
-            {loading && <div className='gap-x-1.5 mx-auto flex items-center'><FiLoader className='animate-spin'/>Loading...</div>}
+            {loading && (
+              <div className="gap-x-1.5 mx-auto flex items-center">
+                <FiLoader className="animate-spin" />
+                Loading...
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-y-4">
             <h1 className="text-xl font-semibold mt-4">History</h1>
             {historyItems && historyItems.length > 0 ? (
-              <div className="w-full overflow-x-scroll flex gap-x-2">
+              <div className="w-full overflow-y-scroll z-[50] max-h-64 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {historyItems.map((item, i) => (
-                  <div key={i} className="border rounded-lg p-4">
-                    <h1 className="text-sm">{`${findUserByExternalId(item.changedById)?.first_name} ${
-                      findUserByExternalId(item.changedById)?.last_name
-                    } made some changes on this user:`}</h1>
-                    <h2 className="text-sm font-light">
-                      Change {item.from}% to {item.to}%
+                  <div key={i} className="border min-w-1/3 items-center flex flex-col gap-y-2 rounded-lg p-4">
+                    <div className="flex gap-x-2 items-center">
+                    <h2 className="text-xl font-medium">
+                      {item.from}%
                     </h2>
-                    <p className="mt-2 text-sm font-light text-muted-foreground">{formatDate(item.createdAt)}</p>
+                    <BsArrowRight size={24}/>
+                    <h2 className="text-xl font-medium">
+                      {item.to}%
+                    </h2>
+                    </div>
+                    <div className="flex gap-x-1 items-center">
+                      <h1 className='text-sm'>Change by: </h1>
+                    <Image src={findUserByExternalId(item.changedById)?.image || DefaultPfp} alt='User Image' width={64} height={64} className='h-5 w-5 aspect-square rounded-full'/>
+                    <h1 className="text-sm">{`${
+                      findUserByExternalId(item.changedById)?.first_name
+                    } ${
+                      findUserByExternalId(item.changedById)?.last_name
+                    }`}</h1></div>
+                    <p className="mt-2 text-sm font-light text-muted-foreground">
+                      {formatDate(item.createdAt)}
+                    </p>
+                    
                   </div>
                 ))}
               </div>
