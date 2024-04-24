@@ -29,8 +29,8 @@ export default function Menu({
   const router = useRouter();
   return (
     <div className="items-center justify-center flex fixed w-full -bottom-4">
-      <p className="text-xs md:text-sm text-muted-foreground absolute md:bottom-10 md:left-10 bottom-[20svh]">
-        Built using <span className="font-medium text-sm md:text-base">CSS VARIABLES</span>
+      <p className="md:block hidden text-sm text-muted-foreground absolute bottom-10 left-10 bottom-[20svh]">
+        Built using <span className="font-medium text-base">CSS VARIABLES</span>
       </p>
       <motion.div
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
