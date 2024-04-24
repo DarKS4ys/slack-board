@@ -51,14 +51,14 @@ export default function Person({
 
     try {
       setLoading(true);
-
+  
       const adminUsers = users.filter(user => user.status === 'Admin');
       const totalAdmins = adminUsers.length;
-
+  
       const diff = value - (person.percentage || 20);
-
-      const distribution = diff / totalAdmins;
-
+  
+      const adjustmentFactor = diff / totalAdmins;
+  
       await Promise.all([
         updateUserDB(person.externalId, { percentage: value }),
         newHistoryItem(
@@ -68,16 +68,17 @@ export default function Person({
           currUserId || 'unknown'
         ),
       ]);
-
+  
       for (const user of adminUsers) {
         if (user.externalId !== person.externalId) {
-          const newPercentage = (user.percentage || 20) + distribution;
+          const userDiff = (user.percentage || 20) - 20; // Calculate difference from base percentage (20)
+          const newPercentage = 20 + userDiff - adjustmentFactor;
           await updateUserDB(user.externalId, { percentage: newPercentage });
         }
       }
-
+  
       setNotify(true);
-
+  
       toast({
         title: `Adjusted the percentages for ${person.first_name} ${person.last_name}`,
         description: `Percentage changed from ${person.percentage}% to ${value}%`,
@@ -177,11 +178,11 @@ export default function Person({
                   <div key={i} className="border min-w-1/3 items-center flex flex-col gap-y-2 rounded-lg p-4">
                     <div className="flex gap-x-2 items-center">
                     <h2 className="text-xl font-medium">
-                      {item.from}%
+                      {item.from.toFixed(1)}%
                     </h2>
                     <BsArrowRight size={24}/>
                     <h2 className="text-xl font-medium">
-                      {item.to}%
+                      {item.to.toFixed(1)}%
                     </h2>
                     </div>
                     <div className="flex gap-x-1 items-center">
