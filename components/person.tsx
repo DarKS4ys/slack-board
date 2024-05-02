@@ -58,7 +58,7 @@ export default function Person({
       const diff = value - (person.percentage || 20);
   
       const adjustmentFactor = diff / totalAdmins;
-  
+      
       await Promise.all([
         updateUserDB(person.externalId, { percentage: value }),
         newHistoryItem(
@@ -71,7 +71,7 @@ export default function Person({
   
       for (const user of adminUsers) {
         if (user.externalId !== person.externalId) {
-          const userDiff = (user.percentage || 20) - 20; // Calculate difference from base percentage (20)
+          const userDiff = (user.percentage || 20) - 20;
           const newPercentage = 20 + userDiff - adjustmentFactor;
           await updateUserDB(user.externalId, { percentage: newPercentage });
         }

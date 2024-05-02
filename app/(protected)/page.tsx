@@ -6,7 +6,7 @@ import Image from 'next/image';
 export default async function Home() {
   const users = await db.user.findMany({
     where: { status: 'Admin' },
-    orderBy: { percentage: 'asc' },
+    orderBy: { percentage: 'desc' },
     include: {
       HistoryItem: { 
         orderBy: { createdAt: 'desc' } 
